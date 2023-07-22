@@ -1,30 +1,34 @@
 import {useLoaderData } from 'react-router-dom';
-import { getData } from '../api/getData';
+import { getData, getImage } from '../api/getData';
 import { CitiesLoaderData } from '../types/CitiesLoaderData';
+import { City } from '../types/CityType';
+import { WeatherCards } from '../components/WeatherCards';
 
 export function Main(): JSX.Element {
-	const {kyiv, london, tbilisi} = useLoaderData() as CitiesLoaderData;
-	console.log('kyiv: ', kyiv);
-	console.log('london: ', london);
-	console.log('tbilisi: ', tbilisi);
+	const {kyiv, kyivImage, london, londonImage, tbilisi, tbilisiImage} = useLoaderData() as CitiesLoaderData;
+	const cities = [kyiv, london, tbilisi];
+	const images = [kyivImage, londonImage, tbilisiImage];
 
 	return (
 		<>
 			<h1>Main page</h1>
-			{/* <div>
-				<h2>{data.location.country.toString()} {data.location.name.toString()}</h2>
-			</div> */}
+			<WeatherCards cities={cities} images={images} />
 		</>
 	)
 }
 
 export async function mainLoader(): Promise<CitiesLoaderData> {
-	const kyiv = await getData(`http://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_API_KEY}`, '&q=Kiev');
+	const kyiv: City = await getData(`http://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_API_KEY}`, '&q=Kiev');
+	const kyivImage = await getImage(`https://pixabay.com/api/?key=${process.env.REACT_APP_API_KEY_IMAGES}&min_height=400&image_type=photo&pretty=true&orientation=vertical`, '&q=Kyiv');
 
-	const london = await getData(`http://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_API_KEY}`, '&q=London');
+	const london: City = await getData(`http://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_API_KEY}`, '&q=London');
+	const londonImage = await getImage(`https://pixabay.com/api/?key=${process.env.REACT_APP_API_KEY_IMAGES}&min_height=400&image_type=photo&pretty=true&orientation=vertical`, '&q=London');
 
-	const tbilisi = await getData(`http://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_API_KEY}`, '&q=Tbilisi');
 
-	return { kyiv, london, tbilisi };
+	const tbilisi: City = await getData(`http://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_API_KEY}`, '&q=Tbilisi');
+	const tbilisiImage = await getImage(`https://pixabay.com/api/?key=${process.env.REACT_APP_API_KEY_IMAGES}&min_height=400&image_type=photo&pretty=true&orientation=vertical`, '&q=Tbilisi');
+
+
+	return { kyiv, kyivImage, london, londonImage, tbilisi, tbilisiImage };
 }
 

@@ -1,59 +1,87 @@
 import { Country, City, ICity } from 'country-state-city';
 import {useEffect, useState } from 'react';
-import Select, { InputActionMeta } from 'react-select';
+import Select from 'react-select';
+import { getData, getImage } from '../api/getData';
+import { WeatherCards } from '../components/WeatherCards';
 
-const countriesOptions: Option[] = [];
-const allCountries = Country.getAllCountries();
-let allCities: ICity[] | undefined;
-
-allCountries.forEach(country => {
-	countriesOptions.push({value: country.isoCode, label: country.name})
-})
 interface Option {
   value: string;
   label: string;
 }
 
+const countriesOptions: Option[] = [];
+const allCountries = Country.getAllCountries();
+let allCities;
+let defImage = await getImage(`https://pixabay.com/api/?key=${process.env.REACT_APP_API_KEY_IMAGES}&min_height=400&image_type=photo&pretty=true&orientation=vertical`, `&q=city`);
+
+allCountries.forEach(country => {
+	countriesOptions.push({value: country.isoCode, label: country.name})
+})
+///////////////////////////////////
 export function SearchByLocation(): JSX.Element {
-	const [selected, setSelected] = useState<object | null>(null);
-	const [inputValue, setInputValue] = useState<string>('');
-	const [citiesOptions, setCitiesOptions] = useState<Option[]>([]);
+	const [selectedCounty, setSelectedCounty] = useState<object | null>(null);
+	// const [, setInputValue] = useState<string>('');
+	const [selectedCities, setSelectedCities] = useState<any>([]);
+	const [weatherCityData, setWeatherCityData] = useState(null);
+	const [cityImage, setCityImage] = useState(defImage);
+	const [value, setValue] = useState(null);
 	
 	let isShowingCountriesSelect: boolean = false;
 	
-	
-	if (selected !== null) {
+	if (selectedCounty !== null) {
 		isShowingCountriesSelect = true;
 	}
 
-	function handleChange (selectedOption: any) {
+	async function weatherHandler(city) {
+		await getData(`http://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_API_KEY}`, `&q=${city}`).then(res => setWeatherCityData(res));
+		await getImage(`https://pixabay.com/api/?key=${process.env.REACT_APP_API_KEY_IMAGES}&min_height=400&image_type=photo&pretty=true&orientation=vertical`, `&q=${city}`).then(res => setCityImage(res));
+	}
+
+	function handleChangeCountry(selectedOption: any) {
 		isShowingCountriesSelect = false;
-		allCities = City.getCitiesOfCountry(selectedOption.value);
-		setSelected(selectedOption);
-		allCities?.forEach(city => {
-			citiesOptions.push({ value: city.countryCode, label: city.name });
-		})
+		setSelectedCities([]);
+		setSelectedCounty(selectedOption);
+		setValue('');
+		setWeatherCityData(null);
+		setSelectedCities(City.getCitiesOfCountry(selectedOption.value));
+		allCities = City.getCitiesOfCountry(selectedOption.value).map(city => ({
+			label: city.name,
+			value: city.countryCode
+	}));
 	};
 
-	 useEffect(() => {
-		if (selected) {
-		const selectedCountryCode = Object.values(selected)[0];
-		allCities = City.getCitiesOfCountry(selectedCountryCode);
-		const cities = allCities.map(city => ({
-			value: city.name,
-			label: city.name
-		}));
-		setCitiesOptions(cities);
+	async function handleChangeCity(selectedOption: any) {
+		setSelectedCities([]);
+		setSelectedCities(allCities);
+		setValue(selectedOption);
+		weatherHandler(selectedOption.label);
+	};
+
+	useEffect(() => {
+		if (selectedCounty) {
+		const selectedCountryArr = Object.values(selectedCounty);
+			allCities = City.getCitiesOfCountry(selectedCountryArr[0]).map(city => ({
+				value: city.countryCode,
+				label: city.name}
+			))
+		setSelectedCities(allCities);
 		} else {
-		setCitiesOptions([]);
+		setSelectedCities([]);
 		}
-	 }, [selected]);
+	 }, [selectedCounty]);
 	
 	
-	const handleBlur = (event) => {
-		const blurValue = event.target.value;
-		setInputValue(blurValue);
-  	};
+	// const handleBlur = (event) => {
+	// 	//  = event.target.value;
+	// 	// setInputValue(blurValue);
+	// 	setSelectedCities([]);
+	// 	console.log('selected cities bf', selectedCities);
+	// 	// selectedCity = selectedOption.label;
+	// 	// console.log('selectedCity', selectedCity);
+	// 	setSelectedCities(allCities);
+	// 	console.log('selected cities af', selectedCities);
+	// 	console.log(event.target.value);
+	// };
 
 	return (
 		<>
@@ -61,7 +89,7 @@ export function SearchByLocation(): JSX.Element {
 			<h3>Select the Country</h3>
 			<Select
 				options={countriesOptions}
-				onChange={handleChange}
+				onChange={handleChangeCountry}
 				autoFocus={true}
 			/>
 
@@ -69,12 +97,17 @@ export function SearchByLocation(): JSX.Element {
 				<>
 					<h3>Select the City</h3>
 					<Select
-						options={citiesOptions}
+						// inputValue={value}
+						options={selectedCities}
 						autoFocus={true}
-						onBlur={handleBlur}
+						value={value}
+						onChange={handleChangeCity}
+						// onFocus={handleBlur}
 					/>
 				</> : null
 			}
+
+			{weatherCityData && <WeatherCards cities={ [weatherCityData]} images={[cityImage]} />}
 		</>
 	)
 }
