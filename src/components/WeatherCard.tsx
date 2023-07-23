@@ -16,8 +16,6 @@ export function WeatherCard({ current, location, image }): JSX.Element {
 
 	const randomImageNum: number = Math.floor(Math.random() * imageData?.hits?.length);
 
-	console.log('random num', randomImageNum);
-
 	return (
 		<div className='weather-card'>
 			{imageData?.total === 0 ? null : <img className='weather-card__bg' src={imageData?.hits[randomImageNum]?.largeImageURL} alt={current.condition.text}></img>}

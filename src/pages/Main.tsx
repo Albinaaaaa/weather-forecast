@@ -3,7 +3,6 @@ import { getData, getImage } from '../api/getData';
 import { CitiesLoaderData } from '../types/CitiesLoaderData';
 import { City } from '../types/CityType';
 import { WeatherCards } from '../components/WeatherCards';
-import { Footer } from '../components/Footer';
 
 export function Main(): JSX.Element {
 	const {kyiv, kyivImage, london, londonImage, tbilisi, tbilisiImage, monaco, monacoImage} = useLoaderData() as CitiesLoaderData;
@@ -13,7 +12,6 @@ export function Main(): JSX.Element {
 	return (
 		<div className='container'>
 			<WeatherCards cities={cities} images={images} />
-			<Footer />
 		</div>
 	)
 }

@@ -3,12 +3,14 @@ import ReactDOM from 'react-dom/client';
 import './index.scss';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './router';
+import { Footer } from './components/Footer';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router}/>
+    <RouterProvider router={router} />
+    <Footer />
   </React.StrictMode>
 );

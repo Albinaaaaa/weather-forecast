@@ -1,7 +1,6 @@
 import { WeatherCard } from './WeatherCard';
 
 export function WeatherCards({ cities, images }): JSX.Element {
-	// console.log('cities', {...cities});
 
 	return (
 		<div className='weather-container'>
