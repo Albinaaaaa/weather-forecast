@@ -10,6 +10,19 @@ interface Option {
   label: string;
 }
 
+const colourStyles = {
+  control: styles => ({ ...styles, backgroundColor: 'white' }),
+  option: (styles, { data, isDisabled, isFocused, isSelected }) => {
+    const color = '#000';
+    return {
+      ...styles,
+      backgroundColor: isDisabled ? 'red' : '#fff',
+      color: color,
+      cursor: isDisabled ? 'not-allowed' : 'default',
+    };
+  },
+};
+
 const countriesOptions: Option[] = [];
 const allCountries = Country.getAllCountries();
 let allCities;
@@ -77,10 +90,11 @@ export function SearchByLocation(): JSX.Element {
 	}, [selectedCounty]);
 
 	return (
-		<>
-			<h1>Search by location page</h1>
-			<h3>Select the Country</h3>
+		<div className='select container'>
+			<h3 className='select__title'>Select the Country</h3>
 			<Select
+				styles={colourStyles}
+				className='select-countries'
 				options={countriesOptions}
 				onChange={handleChangeCountry}
 				autoFocus={true}
@@ -88,8 +102,9 @@ export function SearchByLocation(): JSX.Element {
 
 			{isShowingCountriesSelect ?
 				<>
-					<h3>Select the City</h3>
-					<Select
+					<h3 className='select__title'>Select the City</h3>
+					<Select className='select__cities'
+						styles={colourStyles}
 						options={selectedCities}
 						autoFocus={true}
 						value={value}
@@ -98,8 +113,20 @@ export function SearchByLocation(): JSX.Element {
 				</> : null
 			}
 
-			{weatherCityData && <WeatherCards cities={[weatherCityData]} images={[cityImage]} />}
+			{weatherCityData &&
+				<div
+					style={
+						{
+							maxWidth: '450px',
+							padding: '15px 0',
+							margin: '0 auto',
+						}
+					}
+				>
+					<WeatherCards cities={[weatherCityData]} images={[cityImage]} />
+				</div>
+			}
 			{/* {selectedCity && <ForecastCards city={selectedCity} />} */}
-		</>
+		</div>
 	)
 }
