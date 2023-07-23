@@ -7,4 +7,6 @@ export interface CitiesLoaderData{
 	londonImage?;
 	tbilisi?: City;
 	tbilisiImage?;
+	monaco?: City;
+	monacoImage?;
 }

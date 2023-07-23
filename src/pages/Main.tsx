@@ -5,15 +5,14 @@ import { City } from '../types/CityType';
 import { WeatherCards } from '../components/WeatherCards';
 
 export function Main(): JSX.Element {
-	const {kyiv, kyivImage, london, londonImage, tbilisi, tbilisiImage} = useLoaderData() as CitiesLoaderData;
-	const cities = [kyiv, london, tbilisi];
-	const images = [kyivImage, londonImage, tbilisiImage];
+	const {kyiv, kyivImage, london, londonImage, tbilisi, tbilisiImage, monaco, monacoImage} = useLoaderData() as CitiesLoaderData;
+	const cities = [kyiv, london, tbilisi, monaco];
+	const images = [kyivImage, londonImage, tbilisiImage, monacoImage];
 
 	return (
-		<>
-			<h1>Main page</h1>
+		<div className='container'>
 			<WeatherCards cities={cities} images={images} />
-		</>
+		</div>
 	)
 }
 
@@ -28,7 +27,10 @@ export async function mainLoader(): Promise<CitiesLoaderData> {
 	const tbilisi: City = await getData(`http://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_API_KEY}`, '&q=Tbilisi');
 	const tbilisiImage = await getImage(`https://pixabay.com/api/?key=${process.env.REACT_APP_API_KEY_IMAGES}&min_height=400&image_type=photo&pretty=true&orientation=vertical`, '&q=Tbilisi');
 
+	const monaco: City = await getData(`http://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_API_KEY}`, '&q=Monaco');
+	const monacoImage = await getImage(`https://pixabay.com/api/?key=${process.env.REACT_APP_API_KEY_IMAGES}&min_height=400&image_type=photo&pretty=true&orientation=vertical`, '&q=Tbilisi');
 
-	return { kyiv, kyivImage, london, londonImage, tbilisi, tbilisiImage };
+
+	return { kyiv, kyivImage, london, londonImage, tbilisi, tbilisiImage, monaco, monacoImage };
 }
 

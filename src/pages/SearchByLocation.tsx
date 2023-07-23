@@ -1,8 +1,9 @@
-import { Country, City, ICity } from 'country-state-city';
+import { Country, City } from 'country-state-city';
 import {useEffect, useState } from 'react';
 import Select from 'react-select';
 import { getData, getImage } from '../api/getData';
 import { WeatherCards } from '../components/WeatherCards';
+// import { ForecastCards } from '../components/ForecastCards';
 
 interface Option {
   value: string;
@@ -12,7 +13,7 @@ interface Option {
 const countriesOptions: Option[] = [];
 const allCountries = Country.getAllCountries();
 let allCities;
-let defImage = await getImage(`https://pixabay.com/api/?key=${process.env.REACT_APP_API_KEY_IMAGES}&min_height=400&image_type=photo&pretty=true&orientation=vertical`, `&q=city`);
+export const defImage = await getImage(`https://pixabay.com/api/?key=${process.env.REACT_APP_API_KEY_IMAGES}&min_height=400&image_type=photo&pretty=true&orientation=vertical`, `&q=cities_country`);
 
 allCountries.forEach(country => {
 	countriesOptions.push({value: country.isoCode, label: country.name})
@@ -20,8 +21,8 @@ allCountries.forEach(country => {
 ///////////////////////////////////
 export function SearchByLocation(): JSX.Element {
 	const [selectedCounty, setSelectedCounty] = useState<object | null>(null);
-	// const [, setInputValue] = useState<string>('');
 	const [selectedCities, setSelectedCities] = useState<any>([]);
+	const [selectedCity, setSelectedCity] = useState('');
 	const [weatherCityData, setWeatherCityData] = useState(null);
 	const [cityImage, setCityImage] = useState(defImage);
 	const [value, setValue] = useState(null);
@@ -33,16 +34,21 @@ export function SearchByLocation(): JSX.Element {
 	}
 
 	async function weatherHandler(city) {
-		await getData(`http://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_API_KEY}`, `&q=${city}`).then(res => setWeatherCityData(res));
+		console.log('set new image');
 		await getImage(`https://pixabay.com/api/?key=${process.env.REACT_APP_API_KEY_IMAGES}&min_height=400&image_type=photo&pretty=true&orientation=vertical`, `&q=${city}`).then(res => setCityImage(res));
+		if (city === 'Kyiv') {
+			await getData(`http://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_API_KEY}`, `&q=Kiev`).then(res => setWeatherCityData(res)).catch(error => console.log(error));
+		} else {
+			await getData(`http://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_API_KEY}`, `&q=${city}`).then(res => setWeatherCityData(res)).catch(error => console.log(error));
+		}
 	}
 
 	function handleChangeCountry(selectedOption: any) {
 		isShowingCountriesSelect = false;
-		setSelectedCities([]);
 		setSelectedCounty(selectedOption);
 		setValue('');
 		setWeatherCityData(null);
+		setCityImage(defImage);
 		setSelectedCities(City.getCitiesOfCountry(selectedOption.value));
 		allCities = City.getCitiesOfCountry(selectedOption.value).map(city => ({
 			label: city.name,
@@ -51,10 +57,10 @@ export function SearchByLocation(): JSX.Element {
 	};
 
 	async function handleChangeCity(selectedOption: any) {
-		setSelectedCities([]);
-		setSelectedCities(allCities);
+		setWeatherCityData(null);
 		setValue(selectedOption);
 		weatherHandler(selectedOption.label);
+		setSelectedCity(selectedOption.label);
 	};
 
 	useEffect(() => {
@@ -68,20 +74,7 @@ export function SearchByLocation(): JSX.Element {
 		} else {
 		setSelectedCities([]);
 		}
-	 }, [selectedCounty]);
-	
-	
-	// const handleBlur = (event) => {
-	// 	//  = event.target.value;
-	// 	// setInputValue(blurValue);
-	// 	setSelectedCities([]);
-	// 	console.log('selected cities bf', selectedCities);
-	// 	// selectedCity = selectedOption.label;
-	// 	// console.log('selectedCity', selectedCity);
-	// 	setSelectedCities(allCities);
-	// 	console.log('selected cities af', selectedCities);
-	// 	console.log(event.target.value);
-	// };
+	}, [selectedCounty]);
 
 	return (
 		<>
@@ -97,17 +90,16 @@ export function SearchByLocation(): JSX.Element {
 				<>
 					<h3>Select the City</h3>
 					<Select
-						// inputValue={value}
 						options={selectedCities}
 						autoFocus={true}
 						value={value}
 						onChange={handleChangeCity}
-						// onFocus={handleBlur}
 					/>
 				</> : null
 			}
 
-			{weatherCityData && <WeatherCards cities={ [weatherCityData]} images={[cityImage]} />}
+			{weatherCityData && <WeatherCards cities={[weatherCityData]} images={[cityImage]} />}
+			{/* {selectedCity && <ForecastCards city={selectedCity} />} */}
 		</>
 	)
 }
