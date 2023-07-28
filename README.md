@@ -1,6 +1,6 @@
 <h1 align="center">Weather forecast app</h1>
 <div align="center">
-  <p>The project is a weather showcase application that displays weather information for various cities. It utilizes a public API to retrieve weather data and corresponding images for each city. The application dynamically fetches weather data based on user-selected cities and presents the relevant weather conditions along with an appropriate image representation.</p>
+  <p>The project is a weather showcase application that displays weather information for various cities. It utilizes a public API to retrieve weather data and corresponding images for each city. The application dynamically fetches weather data based on user-selected cities and presents the relevant weather conditions along with an appropriate image representation from another API.</p>
 </div>
 <h2 align="center">Used techonologies:</h2>
 <div align="center">
