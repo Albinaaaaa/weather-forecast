@@ -5,7 +5,6 @@
 <h2 align="center">Used techonologies:</h2>
 <div align="center">
   <img src="https://img.shields.io/badge/HTML-black?style=for-the-badge&logo=HTML5" alt="HTML"/>
-  <img src="https://img.shields.io/badge/css-black?style=for-the-badge&logo=css3" alt="CSS"/>
   <img src="https://img.shields.io/badge/SCSS-black?style=for-the-badge&logo=SASS" alt="SCSS"/>
   <img src="https://img.shields.io/badge/TypeScript-black?style=for-the-badge&logo=typescript" alt="TypeScript"/>
   <img src="https://img.shields.io/badge/React-black?style=for-the-badge&logo=React" alt="React"/>
